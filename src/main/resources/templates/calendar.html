@@ -1,0 +1,185 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/header :: header"></head>
+    <link rel='stylesheet' href='webjars/fullcalendar/3.8.0/dist/fullcalendar.css'/>
+    <script src='webjars/moment/2.19.1/min/moment.min.js'></script>
+    <script src='webjars/fullcalendar/3.8.0/dist/fullcalendar.js'></script>
+    <script src="js/gcal.min.js"></script>
+    <script src="js/calendar.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.0/fullcalendar.print.min.css " rel="stylesheet" type="text/css" media="print" />
+    <title>Calendar</title>
+
+    <style>
+        @media print {
+            a[href]:after {
+                content: none !important;
+            }
+            canvas {
+                max-width: 100% !important;
+            }
+        }
+        .glyphicon {
+            margin-left: 4px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+        }
+    </style>
+
+    <body>
+        <div th:replace="fragments/navigation :: navigation"></div>
+        <div class="container" id="calendarContainer">
+            <div th:if="${param.notitle}">
+                <div class="alert alert-danger alert-dismissable">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    Title cannot be empty
+                </div>
+            </div>
+            <!-- Show calendar -->
+            <div class="panel panel-login">
+                <div id='calendar' style="height: auto; overflow: auto;"></div>
+            </div>
+
+            <!-- Modal: New event -->
+            <div id="createEventModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Add Event</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="control-group">
+                                <label class="control-label">Title: </label>
+                                <div class="field desc">
+                                    <input id="theTitle" class="form-control" autocomplete="off" name="title" placeholder="Title" type="text" autofocus="true"/>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="control-group">
+                                <label class="control-label">Description: </label>
+                                <div class="field desc">
+                                    <input id="theDescription" class="form-control" autocomplete="off" name="title" placeholder="Description" type="text"/>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="control-group">
+                                <label class="control-label">Colour: </label>
+                                <div class="field desc">
+                                    <select name="color" class="form-control" id="theColor">
+                                        <option value="#5C6BC0">Default</option>
+                                        <option style="color:#01579B;" value="#01579B">&#9724; Dark Blue</option>
+                                        <option style="color:#4DD0E1;" value="#4DD0E1">&#9724; Turquoise</option>
+                                        <option style="color:#4CAF50;" value="#4CAF50">&#9724; Green</option>
+                                        <option style="color:#FFD700;" value="#FFD700">&#9724; Yellow</option>
+                                        <option style="color:#FF8C00;" value="#FF8C00">&#9724; Orange</option>
+                                        <option style="color:#F44336;" value="#F44336">&#9724; Red</option>
+                                        <option style="color:#212121;" value="#212121">&#9724; Black</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <br/>
+                            <div class="control-group">
+                                <label class="control-label" for="when">When: </label>
+                                <div class="controls controls-row" id="when" style="margin-top:5px;">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            <a class="btn btn-primary" id="submitButton">Save</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="screenshotModal" class="modal fade" role="dialog">
+                <div class="modal-dialog" style="width: 80%; height:100%;padding:0;">
+                    <div class="modal-content" style="height: auto;min-height: 100%">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="text-center">Save as image</h4>
+                        </div>
+                        <div id="screenshotModalBody" class="modal-body" style="">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--Modal: Edit event-->
+            <div id="editEventModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Edit Event</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="control-group">
+                                <label class="control-label" for="theTitle">Title: </label>
+                                <div class="field desc">
+                                    <input class="form-control" autocomplete="off" id="modalEditTitle" autofocus="true" name="title" placeholder="Title" type="text"/>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="control-group">
+                                <label class="control-label" for="theDescription">Description: </label>
+                                <div class="field desc">
+                                    <input class="form-control" autocomplete="off" id="modalEditDesc" name="desc" placeholder="Description" type="text"/>
+                                </div>
+                            </div>
+                            <br/>
+                            <div id="editEventColourGroup" class="control-group">
+                                <label class="control-label" for="theColor">Colour: </label>
+                                <div class="field desc">
+                                    <select name="color" class="form-control" id="eventEditColour">
+                                        <option value="#5C6BC0">Default</option>
+                                        <option style="color:#01579B;" value="#01579B">&#9724; Dark Blue</option>
+                                        <option style="color:#4DD0E1;" value="#4DD0E1">&#9724; Turquoise</option>
+                                        <option style="color:#4CAF50;" value="#4CAF50">&#9724; Green</option>
+                                        <option style="color:#FFD700;" value="#FFD700">&#9724; Yellow</option>
+                                        <option style="color:#FF8C00;" value="#FF8C00">&#9724; Orange</option>
+                                        <option style="color:#F44336;" value="#F44336">&#9724; Red</option>
+                                        <option style="color:#212121;" value="#212121">&#9724; Black</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <br/>
+                            <div class="control-group">
+                                <label class="control-label" for="when">When: </label>
+                                <div class="controls controls-row" id="editWhen" style="margin-top:5px;">
+                                </div>
+                            </div>
+                            <div id="modalAuthor">
+                            </div>
+
+                            <input type="hidden" id="eventEditID"/>
+                            <input type="hidden" id="startEditTime"/>
+                            <input type="hidden" id="endEditTime"/>
+                            <br/>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button id="editCancelButton" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            <a class="btn btn-danger pull-left" id="deleteButton">Delete</a>
+                            <a class="btn btn-primary" id="submitEditButton">Save</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

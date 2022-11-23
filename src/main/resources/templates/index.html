@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"></head>
+<title th:text="'Home - '+${loggedUser.firstName}+' '+${loggedUser.lastName}"></title>
+
+<body>
+<div th:replace="fragments/navigation :: navigation"></div>
+
+<link rel='stylesheet' href='webjars/fullcalendar/3.8.0/dist/fullcalendar.css'/>
+<script src='webjars/moment/2.19.1/min/moment.min.js'></script>
+<script src='webjars/fullcalendar/3.8.0/dist/fullcalendar.js'></script>
+<script src="js/gcal.min.js"></script>
+<script src="js/calendarWidget.js"></script>
+
+<div class="container">
+    <h2 class="greentext"><span class="fa fa-home"></span> <span th:text="${timeGreeting}"></span>, <span th:text="${loggedUser.firstName}"></span></h2>
+
+    <div class="row">
+        <div class="col-md-6 col-md-12">
+            <a class="link-unstyled" href="/task-list">
+                <div class="panel panel-login">
+                    <h3>Tasks</h3>
+                    <p th:if="${loggedUser.MotivationalTaskMessage}" th:text="${session.taskMotivation}"></p>
+                    <p th:if="!${loggedUser.MotivationalTaskMessage}">You have <strong><span th:text="${session.tasksLeft}"></span></strong> task(s).</p>
+                    <!--<p th:if="${not #lists.isEmpty(pendingTasks)}">You have <strong><span th:text="${#lists.size(pendingTasks)}"></span></strong> pending tasks to review.</p>-->
+                </div>
+            </a>
+
+        </div>
+        <div class="col-md-6 col-md-4">
+
+            <div th:if="${loggedUser.smallCalendar}" class="panel panel-login">
+                <div id='calendar'></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>

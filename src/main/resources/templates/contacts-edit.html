@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"></head>
+<title>Edit contact</title>
+
+<body>
+    <div th:replace="fragments/navigation :: navigation"></div>
+
+    <div class="container">
+        <h1>Edit contact: </h1>
+        <div class="panel panel-login">
+            <div class="panel-body">
+                <form th:action="@{/contacts-edit(id=${contact.id})}" th:object="${contact}"  method="post">
+                    <div class="form-group">
+                        <label for="firstName" class="control-label col-sm-2">First Name: </label>
+                        <input id="firstName" type="text" autocomplete="off" th:field="*{firstName}"
+                               class="form-control"
+                               autofocus="autofocus"
+                               required="required"
+                               placeholder=""/>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName" class="control-label col-sm-2">Last Name: </label>
+                        <input id="lastName" type="text" autocomplete="off" th:field="*{lastName}"
+                               class="form-control"
+                               autofocus="autofocus"
+                               required="required"
+                               placeholder=""/>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="control-label col-sm-2">Email: </label>
+                        <input id="email" type="text" autocomplete="off" th:field="*{email}"
+                               class="form-control"
+                               autofocus="autofocus"
+                               required="required"
+                               placeholder=""/>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobileNumber" class="control-label col-sm-2">Mobile Number: </label>
+                        <input id="mobileNumber" type="text" autocomplete="off" th:field="*{mobileNumber}"
+                               class="form-control"
+                               autofocus="autofocus"
+                               required="required"
+                               placeholder=""/>
+                    </div>
+                    <div class="form-group">
+                        <label for="address" class="control-label col-sm-2">Address: </label>
+                        <input id="address" type="text" autocomplete="off" th:field="*{address}"
+                               class="form-control"
+                               autofocus="autofocus"
+                               required="required"
+                               placeholder=""/>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes" class="control-label col-sm-2">Notes: </label>
+                        <input id="notes" type="text" autocomplete="off" th:field="*{notes}"
+                               class="form-control"
+                               autofocus="autofocus"
+                               placeholder=""/>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-6 col-sm-offset-3">
+                                <input type="submit"
+                                       name="contact-submit"
+                                       id="contact-submit"
+                                       class="form-control btn btn-info"
+                                       value="Edit contact"/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <a href="/contacts" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Back</a>
+    </div>
+    <br/>
+</body>
+</html>
